@@ -15,15 +15,25 @@ import {
 import type { MetaFunction } from 'remix';
 import { authenticator, oAuthStrategy } from '~/auth.server';
 import styles from './tailwind.css';
+import { db } from './utils/db.server';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await oAuthStrategy.checkSession(request);
+  let user;
+  if (session) {
+    user = await db.profiles.findUnique({
+      where: {
+        id: session.user?.id,
+      },
+    });
+  }
   return {
     env: {
       SUPABASE_URL: process.env.SUPABASE_URL,
       PUBLIC_SUPABASE_ANON_KEY: process.env.PUBLIC_SUPABASE_ANON_KEY,
     },
     session,
+    user,
   };
 };
 
@@ -101,11 +111,10 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
 }
 
 function Layout({ children }: React.PropsWithChildren<{}>) {
-  const { session } = useLoaderData();
-  console.log(session);
+  const { session, user } = useLoaderData();
   return (
     <div className="">
-      <header className="navbar bg-base-100 mb-10 shadow-xl rounded-box">
+      <header className="mb-10 shadow-xl navbar bg-base-100 rounded-box">
         <div className=" navbar-start"></div>
         <div className=" navbar-center">
           <Link to="/">
@@ -120,12 +129,12 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full">
-                  <img src={session.user.user_metadata.avatar_url} />
+                  <img src={user.avatar_url} />
                 </div>
               </label>
               <ul
                 tabIndex={0}
-                className="mt-3 p-2 shadow-xl menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+                className="p-2 mt-3 shadow-xl menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
               >
                 <li>
                   <Link to="/profile">Profile</Link>
@@ -134,7 +143,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                 <li>
                   <a>Settings</a>
                 </li>
-                <div className="border-b border-gray-500 pt-1 " />
+                <div className="pt-1 border-b border-gray-500 " />
                 <li className="mt-1">
                   <Form method="post">
                     <button>Logout</button>
