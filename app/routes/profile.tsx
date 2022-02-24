@@ -1,7 +1,6 @@
 import { ActionFunction, Form, LoaderFunction } from 'remix';
-import { json, useLoaderData } from 'remix';
-import { authenticator, oAuthStrategy, sessionStorage } from '~/auth.server';
-import { signInWithGithub } from '~/supabase.client';
+import { useLoaderData } from 'remix';
+import { oAuthStrategy } from '~/auth.server';
 import { db } from '~/utils/db.server';
 import { Profile } from '~/utils/types';
 
