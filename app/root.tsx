@@ -16,6 +16,7 @@ import type { MetaFunction } from 'remix';
 import { authenticator, oAuthStrategy } from '~/auth.server';
 import styles from './tailwind.css';
 import { db } from './utils/db.server';
+import { RiAddLine, RiCloseLine } from 'react-icons/ri';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await oAuthStrategy.checkSession(request);
@@ -126,30 +127,36 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
         </div>
         <div className="navbar-end">
           {session ? (
-            <div className="dropdown dropdown-end">
-              <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                <div className="w-10 rounded-full">
-                  <img src={user.avatar_url} />
-                </div>
-              </label>
-              <ul
-                tabIndex={0}
-                className="p-2 mt-3 shadow-xl menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
-              >
-                <li>
-                  <Link to="/profile">Profile</Link>
-                </li>
+            <div className="flex space-x-2 items-center">
+              <Link to="/add" className="btn btn-circle btn-sm">
+                <RiAddLine className="h-8 w-8 fill-current" />
+              </Link>
 
-                <li>
-                  <a>Settings</a>
-                </li>
-                <div className="pt-1 border-b border-gray-500 " />
-                <li className="mt-1">
-                  <Form method="post">
-                    <button>Logout</button>
-                  </Form>
-                </li>
-              </ul>
+              <div className="dropdown dropdown-end">
+                <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                  <div className="w-10 rounded-full">
+                    <img src={user.avatar_url} />
+                  </div>
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="p-2 mt-3 shadow-xl menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+                >
+                  <li>
+                    <Link to="/profile">Profile</Link>
+                  </li>
+
+                  <li>
+                    <a>Settings</a>
+                  </li>
+                  <div className="pt-1 border-b border-gray-500 " />
+                  <li className="mt-1">
+                    <Form method="post">
+                      <button>Logout</button>
+                    </Form>
+                  </li>
+                </ul>
+              </div>
             </div>
           ) : (
             <Link to="/login">

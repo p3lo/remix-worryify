@@ -25,6 +25,7 @@ model posts {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   post       String
+  is_anon    Boolean
   author     profiles  @relation(fields: [authorId], references: [id])
   authorId   String
 }
