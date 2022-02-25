@@ -1,22 +1,27 @@
-import { ActionFunction, Form, LoaderFunction } from 'remix';
+import { ActionFunction, Form, LoaderFunction, Outlet } from 'remix';
 import { useLoaderData } from 'remix';
 import { oAuthStrategy } from '~/auth.server';
 import { db } from '~/utils/db.server';
-import { Profile } from '~/utils/types';
+import { Profile, Worry } from '~/utils/types';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await oAuthStrategy.checkSession(request, {
     failureRedirect: '/login',
   });
-  let user;
+  let user, worries;
   if (session) {
     user = await db.profiles.findUnique({
       where: {
         id: session.user?.id,
       },
     });
+    worries = await db.posts.findMany({
+      where: {
+        authorId: session.user?.id,
+      },
+    });
   }
-  return user;
+  return { user, worries };
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -42,7 +47,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Profile() {
-  const user: Profile = useLoaderData();
+  const { user, worries }: { user: Profile; worries: Worry[] } = useLoaderData();
 
   return (
     <>
@@ -59,34 +64,33 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <Form method="post">
-        <div className="flex flex-col items-center justify-center mt-[10vh] space-y-3">
-          <label className="justify-center w-[50vh] input-group">
-            <span className="w-[150px]">Username</span>
-            <input
-              type="text"
-              name="user_name"
-              defaultValue={user.user_name}
-              placeholder="username"
-              className="w-full input input-bordered"
-            />
-          </label>
-          <label className="justify-center w-[50vh] input-group">
-            <span className="w-[150px]">Email</span>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              defaultValue={user.email}
-              className="w-full input input-bordered"
-            />
-          </label>
+      <Form method="post" className="flex flex-col items-center justify-center my-[5vh] space-y-3">
+        <label className="justify-center w-[50vh] input-group">
+          <span className="w-[150px]">Username</span>
+          <input
+            type="text"
+            name="user_name"
+            defaultValue={user.user_name}
+            placeholder="username"
+            className="w-full input input-bordered"
+          />
+        </label>
+        <label className="justify-center w-[50vh] input-group">
+          <span className="w-[150px]">Email</span>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            defaultValue={user.email}
+            className="w-full input input-bordered"
+          />
+        </label>
 
-          <button type="submit" className="btn w-[200px]">
-            Save
-          </button>
-        </div>
+        <button type="submit" className="btn w-[200px]">
+          Save
+        </button>
       </Form>
+      <Outlet />
     </>
   );
 }

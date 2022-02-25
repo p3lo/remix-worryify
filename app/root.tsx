@@ -16,7 +16,7 @@ import type { MetaFunction } from 'remix';
 import { authenticator, oAuthStrategy } from '~/auth.server';
 import styles from './tailwind.css';
 import { db } from './utils/db.server';
-import { RiAddLine, RiCloseLine } from 'react-icons/ri';
+import { RiAddLine } from 'react-icons/ri';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await oAuthStrategy.checkSession(request);
@@ -127,9 +127,9 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
         </div>
         <div className="navbar-end">
           {session ? (
-            <div className="flex space-x-2 items-center">
+            <div className="flex items-center space-x-2">
               <Link to="/add" className="btn btn-circle btn-sm">
-                <RiAddLine className="h-8 w-8 fill-current" />
+                <RiAddLine className="w-8 h-8 fill-current" />
               </Link>
 
               <div className="dropdown dropdown-end">
