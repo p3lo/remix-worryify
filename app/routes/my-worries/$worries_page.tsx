@@ -8,7 +8,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     failureRedirect: '/login',
   });
   let page_s = params.worries_page;
-  if (!page_s || !+page_s) return redirect('/profile/1');
+  if (!page_s || !+page_s) return redirect('/my-worries/1');
   let page = +page_s;
   let worries, pages, arr_pages;
   if (session) {
@@ -21,7 +21,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
     let skip = 0;
     if (page > 1) skip = (page - 1) * 5;
-    if (page > pages) return redirect('/profile/1');
+    if (page > pages) return redirect('/my-worries/1');
     arr_pages = Array(pages)
       .fill(0)
       .map((_, i) => i++);
@@ -52,7 +52,7 @@ function getDate(date: Date) {
   return month + 1 + '/' + day + '/' + year;
 }
 
-const Page = () => {
+export default function MyWorries() {
   const { worries, page, arr_pages }: { worries: Worry[]; page: number; arr_pages: number[] } = useLoaderData();
   return (
     <>
@@ -79,13 +79,11 @@ const Page = () => {
       </div>
       <div className="flex justify-center mb-5 btn-group">
         {arr_pages.map((item) => (
-          <Link key={item} to={`/profile/${item + 1}`} className={`btn btn-xs ${item + 1 === page && 'btn-active'}`}>
+          <Link key={item} to={`/my-worries/${item + 1}`} className={`btn btn-xs ${item + 1 === page && 'btn-active'}`}>
             {item + 1}
           </Link>
         ))}
       </div>
     </>
   );
-};
-
-export default Page;
+}

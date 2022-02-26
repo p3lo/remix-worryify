@@ -8,20 +8,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await oAuthStrategy.checkSession(request, {
     failureRedirect: '/login',
   });
-  let user, worries;
+  let user;
   if (session) {
     user = await db.profiles.findUnique({
       where: {
         id: session.user?.id,
       },
     });
-    worries = await db.posts.findMany({
-      where: {
-        authorId: session.user?.id,
-      },
-    });
   }
-  return { user, worries };
+  return { user };
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -47,7 +42,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Profile() {
-  const { user, worries }: { user: Profile; worries: Worry[] } = useLoaderData();
+  const { user }: { user: Profile } = useLoaderData();
 
   return (
     <>
