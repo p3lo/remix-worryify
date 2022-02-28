@@ -1,4 +1,5 @@
-import { ActionFunction, Form, LoaderFunction, redirect, Session, useLoaderData } from 'remix';
+import { useEffect, useRef } from 'react';
+import { ActionFunction, Form, LoaderFunction, redirect, Session, useLoaderData, useTransition } from 'remix';
 import { oAuthStrategy } from '~/auth.server';
 import { db } from '~/utils/db.server';
 import { Worry } from '~/utils/types';
@@ -23,7 +24,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
             user_name: true,
           },
         },
-        comments: true,
         comments: {
           include: {
             author: {
@@ -53,8 +53,8 @@ export const action: ActionFunction = async ({ request }) => {
   } else {
     await db.comments.create({
       data: {
-        comment: comment,
-        authorId: userId,
+        comment: comment.toString(),
+        authorId: userId.toString(),
         postId: +worryId,
       },
     });
@@ -72,6 +72,15 @@ function getDate(date: Date) {
 
 function WorryId() {
   const { worry, user_id }: { worry: Worry; user_id: string } = useLoaderData();
+  const transition = useTransition();
+  let isAdding = transition.state === 'submitting' && true;
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (!isAdding) {
+      formRef.current?.reset();
+    }
+  }, [isAdding]);
 
   return (
     <div className="w-full">
@@ -84,9 +93,9 @@ function WorryId() {
             <p>{getDate(worry.created_at)}</p>
           </div>
         </div>
-        <div className="border-b border-gray-500 mt-3" />
+        <div className="mt-3 border-b border-gray-500" />
         {user_id && (
-          <Form method="post" className="flex flex-col space-y-2 mt-5">
+          <Form method="post" className="flex flex-col mt-5 space-y-2" ref={formRef}>
             <input type="hidden" name="worryId" value={worry.id} />
             <input type="hidden" name="userId" value={user_id} />
             <textarea
@@ -94,12 +103,12 @@ function WorryId() {
               placeholder="Comment"
               name="comment"
             />
-            <button type="submit" className="btn btn-sm w-[200px]">
-              Comment
+            <button disabled={isAdding} type="submit" className="btn btn-sm w-[200px]">
+              {isAdding ? 'Saving...' : 'Comment'}
             </button>
           </Form>
         )}
-        <div className="flex flex-col space-y-4 my-5">
+        <div className="flex flex-col my-5 space-y-4">
           {worry.comments?.map((item) => (
             <div key={item.id} className="flex">
               <div className="avatar">

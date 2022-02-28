@@ -10,8 +10,14 @@ export const loader: LoaderFunction = async () => {
           avatar_url: true,
         },
       },
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
     },
   });
+  console.log(all_posts);
   return { all_posts };
 };
 
@@ -47,7 +53,7 @@ export default function Index() {
               <div className="flex space-x-2 text-xs text-gray-400">
                 {item.is_anon ? <p>Anonym</p> : <p>{item.author.user_name}</p>}
                 <div className="border-r border-gray-500" />
-                <p>Comments: 0</p>
+                <p>Comments: {item._count.comments}</p>
                 <div className="border-r border-gray-500" />
                 <p>{getDate(item.created_at)}</p>
               </div>
