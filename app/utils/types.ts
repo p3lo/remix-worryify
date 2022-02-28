@@ -14,4 +14,12 @@ export interface Worry {
   is_anon: boolean;
   post: string;
   author?: Profile;
+  comments?: Comment[];
+}
+export interface Comment {
+  id: number;
+  created_at: Date;
+  comment: string;
+  author?: Profile;
+  worry?: Worry[];
 }

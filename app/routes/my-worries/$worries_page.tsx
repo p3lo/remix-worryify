@@ -1,7 +1,8 @@
-import { Link, LoaderFunction, redirect, useLoaderData } from 'remix';
+import { ActionFunction, Form, Link, LoaderFunction, redirect, useLoaderData } from 'remix';
 import { oAuthStrategy } from '~/auth.server';
 import { db } from '~/utils/db.server';
 import { Worry } from '~/utils/types';
+import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri';
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const session = await oAuthStrategy.checkSession(request, {
@@ -44,6 +45,24 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return { worries, page, arr_pages };
 };
 
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const worryId = formData.get('worryId');
+  if (worryId) {
+    if (formData.get('_action') === 'delete') {
+      await db.posts.delete({
+        where: {
+          id: +worryId,
+        },
+      });
+    }
+    if (formData.get('_action') === 'edit') {
+      return redirect(`/${worryId}/edit`);
+    }
+  }
+  return null;
+};
+
 function getDate(date: Date) {
   const created = new Date(date);
   const day = created.getDate();
@@ -57,22 +76,33 @@ export default function MyWorries() {
   return (
     <>
       <h1 className="flex items-center justify-center w-full text-xl font-semibold">Your worries</h1>
-      <div className="mt-5 w-[70%] border mx-auto p-3 border-gray-500">
+      <div className="mt-5 w-[95%] sm:w-[85%] md:w-[75%] border mx-auto p-3 border-gray-500">
         <div className="flex flex-col space-y-3">
           {worries.map((item: Worry) => (
-            <div key={item.id} className="flex flex-col p-2 cursor-pointer hover:shadow hover:shadow-gray-500">
-              <div className="line-clamp-3">
-                <p className="text-sm text-gray-300 first-line:font-semibold first-line:text-base first-line:text-white">
-                  {item.post}
-                </p>
-              </div>
-              <div className="flex space-x-2 text-xs text-gray-400">
-                {item.is_anon ? <p>Anonym</p> : <p>{item.author?.user_name}</p>}
-                <div className="border-r border-gray-500" />
-                <p>Comments: 0</p>
-                <div className="border-r border-gray-500" />
-                <p>{getDate(item.created_at)}</p>
-              </div>
+            <div key={item.id} className="flex">
+              <Link to={`/${item.id}`} className="flex flex-col p-2 cursor-pointer hover:shadow hover:shadow-gray-500">
+                <div className="line-clamp-3">
+                  <p className="text-sm text-gray-300 first-line:font-semibold first-line:text-base first-line:text-white">
+                    {item.post}
+                  </p>
+                </div>
+                <div className="flex space-x-2 text-xs text-gray-400">
+                  {item.is_anon ? <p>Anonym</p> : <p>{item.author?.user_name}</p>}
+                  <div className="border-r border-gray-500" />
+                  <p>Comments: 0</p>
+                  <div className="border-r border-gray-500" />
+                  <p>{getDate(item.created_at)}</p>
+                </div>
+              </Link>
+              <Form method="post" className="flex flex-col items-center justify-center p-2 space-y-2">
+                <input type="hidden" name="worryId" value={item.id} />
+                <button type="submit" name="_action" value="delete">
+                  <RiDeleteBin6Line className="h-4 w-4 text-red-500" />
+                </button>
+                <button type="submit" name="_action" value="edit">
+                  <RiEditLine className="h-4 w-4 text-blue-500 cursor-pointer" />
+                </button>
+              </Form>
             </div>
           ))}
         </div>

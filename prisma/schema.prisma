@@ -11,21 +11,33 @@ datasource db {
 }
 
 model profiles {
-  id         String    @unique
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  id         String     @unique
+  created_at DateTime   @default(now())
+  updated_at DateTime?  @updatedAt
   user_name  String
   avatar_url String
   email      String
   posts      posts[]
+  comments   comments[]
 }
 
 model posts {
-  id         Int       @id @default(autoincrement())
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  id         Int        @id @default(autoincrement())
+  created_at DateTime   @default(now())
+  updated_at DateTime?  @updatedAt
   post       String
   is_anon    Boolean
-  author     profiles  @relation(fields: [authorId], references: [id])
+  author     profiles   @relation(fields: [authorId], references: [id])
   authorId   String
+  comments   comments[]
+}
+
+model comments {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  comment    String
+  author     profiles @relation(fields: [authorId], references: [id])
+  authorId   String
+  post       posts    @relation(fields: [postId], references: [id])
+  postId     Int
 }
