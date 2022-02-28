@@ -1,8 +1,28 @@
-import { Link, LoaderFunction, useLoaderData } from 'remix';
+import { Link, LoaderFunction, redirect, useLoaderData } from 'remix';
+import Pagination from '~/components/Pagination';
 import { db } from '~/utils/db.server';
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  let page = url.searchParams.get('page');
+  if (!page || !+page) return redirect('/?page=1');
+  let pages;
+  const posts_count = await db.posts.count();
+  pages = posts_count / 10;
+  if (pages === 0) pages = 1;
+
+  let zvysok = posts_count % 10;
+  if (zvysok > 0) pages = Math.floor(pages) + 1;
+
+  let skip = 0;
+  if (+page > 1) skip = (+page - 1) * 10;
+  if (+page > pages) return redirect('/?page=1');
+  let arr_pages = Array(pages)
+    .fill(0)
+    .map((_, i) => i++);
   const all_posts = await db.posts.findMany({
+    skip: skip,
+    take: 10,
     include: {
       author: {
         select: {
@@ -17,8 +37,7 @@ export const loader: LoaderFunction = async () => {
       },
     },
   });
-  console.log(all_posts);
-  return { all_posts };
+  return { all_posts, arr_pages, page };
 };
 
 function getDate(date: Date) {
@@ -30,14 +49,14 @@ function getDate(date: Date) {
 }
 
 export default function Index() {
-  const { all_posts } = useLoaderData();
+  const { all_posts, arr_pages, page } = useLoaderData();
   return (
     <div className="w-full">
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-xl">Welcome to WorryIfy</h1>
         <p>A place to let your worries go.</p>
       </div>
-      <div className="my-10 w-[95%] sm:w-[85%] md:w-[75%] border mx-auto p-3 border-gray-500">
+      <div className="mt-10 w-[95%] sm:w-[85%] md:w-[75%] border mx-auto p-3 border-gray-500">
         <div className="flex flex-col space-y-3">
           {all_posts.map((item: any) => (
             <Link
@@ -61,6 +80,7 @@ export default function Index() {
           ))}
         </div>
       </div>
+      <Pagination arr_pages={arr_pages} page={page} />
     </div>
   );
 }
