@@ -32,7 +32,7 @@ export const supabaseClient = createClient(window.env.SUPABASE_URL, window.env.P
   persistSession: false,
 });
 
-export const signInWithGithub = (redirectTo = 'http://localhost:3000/oauth/callback') =>
+export const signInWithGithub = (redirectTo = 'https://remix-worryify.vercel.app/oauth/callback') =>
   supabaseClient.auth.signIn(
     {
       provider: 'github',
@@ -40,7 +40,7 @@ export const signInWithGithub = (redirectTo = 'http://localhost:3000/oauth/callb
     { redirectTo }
   );
 
-export const signInWithGoogle = (redirectTo = 'http://localhost:3000/oauth/callback') =>
+export const signInWithGoogle = (redirectTo = 'https://remix-worryify.vercel.app/oauth/callback') =>
   supabaseClient.auth.signIn(
     {
       provider: 'google',
