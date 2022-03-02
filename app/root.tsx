@@ -174,7 +174,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
             <span className="text-2xl px-[2px] bg-white text-gray-700 font-semibold select-none">WI</span>
           </div>
 
-          <p>Copyright © 2022 - All right reserved</p>
+          <p>Copyleft © 2022 - No rights reserved</p>
         </div>
         <div className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
           <a>
