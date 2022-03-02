@@ -25,6 +25,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           },
         },
         comments: {
+          orderBy: {
+            created_at: 'desc',
+          },
           include: {
             author: {
               select: {
@@ -110,7 +113,7 @@ function WorryId() {
         )}
         <div className="flex flex-col my-5 space-y-4">
           {worry.comments?.map((item) => (
-            <div key={item.id} className="flex">
+            <div key={item.id} className="flex space-x-3">
               <div className="avatar">
                 <div className="w-12 rounded-full">
                   <img src={item.author?.avatar_url} />

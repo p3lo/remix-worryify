@@ -1,7 +1,7 @@
 import type { LoaderFunction } from 'remix';
 import { json, useLoaderData } from 'remix';
 import { authenticator, oAuthStrategy, sessionStorage } from '~/auth.server';
-import { signInWithGithub } from '~/supabase.client';
+import { signInWithGithub, signInWithGoogle } from '~/supabase.client';
 
 type LoaderData = {
   error: { message: string } | null;
@@ -26,9 +26,12 @@ export default function Screen() {
     <>
       {error && <div>{error.message}</div>}
 
-      <div className="flex w-full mt-[25vh]">
-        <button className="btn mx-auto" onClick={() => signInWithGithub()}>
+      <div className="flex flex-col space-y-5 w-full mt-[25vh]">
+        <button className="btn mx-auto w-[250px]" onClick={() => signInWithGithub()}>
           Sign in with Github
+        </button>
+        <button className="btn mx-auto w-[250px]" onClick={() => signInWithGoogle()}>
+          Sign in with Google
         </button>
       </div>
     </>
