@@ -38,6 +38,6 @@ model comments {
   comment    String
   author     profiles @relation(fields: [authorId], references: [id])
   authorId   String
-  post       posts    @relation(fields: [postId], references: [id])
+  post       posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId     Int
 }

@@ -1,4 +1,4 @@
-import { ActionFunction, Form, LoaderFunction, redirect } from 'remix';
+import { ActionFunction, Form, LoaderFunction, redirect, useTransition } from 'remix';
 import { oAuthStrategy } from '~/auth.server';
 import { db } from '~/utils/db.server';
 
@@ -35,6 +35,8 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Add() {
+  const transition = useTransition();
+  let isAdding = transition.state === 'submitting' && true;
   return (
     <div className="w-full">
       <div className="flex flex-col items-center justify-center">
@@ -47,8 +49,8 @@ export default function Add() {
           <span className="mr-2 label-text">Post anonymously</span>
           <input type="checkbox" className="checkbox checkbox-sm" name="anonymously" />
         </label>
-        <button type="submit" className="btn w-[200px]">
-          Post
+        <button disabled={isAdding} type="submit" className="btn w-[200px]">
+          {isAdding ? 'Saving...' : 'Post'}
         </button>
       </Form>
     </div>

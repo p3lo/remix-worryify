@@ -21,8 +21,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     .fill(0)
     .map((_, i) => i++);
   const all_posts = await db.posts.findMany({
+    orderBy: {
+      created_at: 'desc',
+    },
     skip: skip,
     take: 10,
+
     include: {
       author: {
         select: {

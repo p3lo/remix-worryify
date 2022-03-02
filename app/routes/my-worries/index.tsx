@@ -14,22 +14,29 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   let page = +page_s;
   let worries, pages, arr_pages;
   if (session) {
-    const posts_count = await db.posts.count();
-    pages = posts_count / 5;
+    const posts_count = await db.posts.count({
+      where: {
+        authorId: session.user?.id,
+      },
+    });
+    pages = posts_count / 10;
     if (pages === 0) pages = 1;
 
-    let zvysok = posts_count % 5;
+    let zvysok = posts_count % 10;
     if (zvysok > 0) pages = Math.floor(pages) + 1;
 
     let skip = 0;
-    if (page > 1) skip = (page - 1) * 5;
+    if (page > 1) skip = (page - 1) * 10;
     if (page > pages) return redirect('/my-worries?page=1');
     arr_pages = Array(pages)
       .fill(0)
       .map((_, i) => i++);
     worries = await db.posts.findMany({
+      orderBy: {
+        created_at: 'desc',
+      },
       skip: skip,
-      take: 5,
+      take: 10,
       where: {
         authorId: session.user?.id,
       },
@@ -38,6 +45,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           select: {
             user_name: true,
             avatar_url: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
           },
         },
       },
@@ -80,33 +92,37 @@ export default function MyWorries() {
       <h1 className="flex items-center justify-center w-full text-xl font-semibold">Your worries</h1>
       <div className="mt-5 w-[95%] sm:w-[85%] md:w-[75%] border mx-auto border-gray-500">
         <div className="flex flex-col">
-          {worries.map((item: Worry) => (
-            <div key={item.id} className="flex hover:bg-gray-700">
-              <Link to={`/${item.id}`} className="flex flex-col p-3 cursor-pointer ">
-                <div className="line-clamp-3">
-                  <p className="text-sm text-gray-300 first-line:font-semibold first-line:text-base first-line:text-white">
-                    {item.post}
-                  </p>
-                </div>
-                <div className="flex space-x-2 text-xs text-gray-400">
-                  {item.is_anon ? <p>Anonym</p> : <p>{item.author?.user_name}</p>}
-                  <div className="border-r border-gray-500" />
-                  <p>Comments: 0</p>
-                  <div className="border-r border-gray-500" />
-                  <p>{getDate(item.created_at)}</p>
-                </div>
-              </Link>
-              <Form method="post" className="flex items-start justify-center px-2 py-4 space-x-2">
-                <input type="hidden" name="worryId" value={item.id} />
-                <button type="submit" name="_action" value="delete">
-                  <RiDeleteBin6Line className="h-4 w-4 text-red-500 transition duration-150 ease-out transform cursor-pointer hover:scale-125" />
-                </button>
-                <button type="submit" name="_action" value="edit">
-                  <RiEditLine className="h-4 w-4 text-blue-500 transition duration-150 ease-out transform cursor-pointer hover:scale-125" />
-                </button>
-              </Form>
-            </div>
-          ))}
+          {worries.length > 0 ? (
+            worries.map((item: Worry) => (
+              <div key={item.id} className="flex hover:bg-gray-700">
+                <Link to={`/${item.id}`} className="flex flex-col flex-grow p-3 cursor-pointer ">
+                  <div className="line-clamp-3">
+                    <p className="text-sm text-gray-300 first-line:font-semibold first-line:text-base first-line:text-white">
+                      {item.post}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2 text-xs text-gray-400">
+                    {item.is_anon ? <p>Anonym</p> : <p>{item.author?.user_name}</p>}
+                    <div className="border-r border-gray-500" />
+                    <p>Comments: {item._count.comments}</p>
+                    <div className="border-r border-gray-500" />
+                    <p>{getDate(item.created_at)}</p>
+                  </div>
+                </Link>
+                <Form method="post" className="flex items-start justify-center px-2 py-4 space-x-2">
+                  <input type="hidden" name="worryId" value={item.id} />
+                  <button type="submit" name="_action" value="delete">
+                    <RiDeleteBin6Line className="w-4 h-4 text-red-500 transition duration-150 ease-out transform cursor-pointer hover:scale-125" />
+                  </button>
+                  <button type="submit" name="_action" value="edit">
+                    <RiEditLine className="w-4 h-4 text-blue-500 transition duration-150 ease-out transform cursor-pointer hover:scale-125" />
+                  </button>
+                </Form>
+              </div>
+            ))
+          ) : (
+            <p className="flex justify-center py-5 text-sm text-gray-400">Nothing found yet</p>
+          )}
         </div>
       </div>
       <div className="flex justify-center mb-5 btn-group">

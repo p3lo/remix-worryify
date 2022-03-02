@@ -13,6 +13,7 @@ export interface Worry {
   updated_at?: Date;
   is_anon: boolean;
   post: string;
+  _count?: any;
   author?: Profile;
   comments?: Comment[];
 }
