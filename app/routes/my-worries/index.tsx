@@ -8,8 +8,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const session = await oAuthStrategy.checkSession(request, {
     failureRedirect: '/login',
   });
-  let page_s = params.worries_page;
-  if (!page_s || !+page_s) return redirect('/my-worries/1');
+  const url = new URL(request.url);
+  let page_s = url.searchParams.get('page');
+  if (!page_s || !+page_s) return redirect('/my-worries?page=1');
   let page = +page_s;
   let worries, pages, arr_pages;
   if (session) {
@@ -22,7 +23,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
     let skip = 0;
     if (page > 1) skip = (page - 1) * 5;
-    if (page > pages) return redirect('/my-worries/1');
+    if (page > pages) return redirect('/my-worries?page=1');
     arr_pages = Array(pages)
       .fill(0)
       .map((_, i) => i++);
@@ -47,6 +48,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
+
   const worryId = formData.get('worryId');
   if (worryId) {
     if (formData.get('_action') === 'delete') {
@@ -57,7 +59,7 @@ export const action: ActionFunction = async ({ request }) => {
       });
     }
     if (formData.get('_action') === 'edit') {
-      return redirect(`/${worryId}/edit`);
+      return redirect(`/my-worries/${worryId}/edit`);
     }
   }
   return null;
@@ -109,7 +111,11 @@ export default function MyWorries() {
       </div>
       <div className="flex justify-center mb-5 btn-group">
         {arr_pages.map((item) => (
-          <Link key={item} to={`/my-worries/${item + 1}`} className={`btn btn-xs ${item + 1 === page && 'btn-active'}`}>
+          <Link
+            key={item}
+            to={`/my-worries?page=${item + 1}`}
+            className={`btn btn-xs ${item + 1 === page && 'btn-active'}`}
+          >
             {item + 1}
           </Link>
         ))}

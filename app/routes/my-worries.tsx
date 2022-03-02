@@ -1,13 +1,11 @@
 import { LoaderFunction, Outlet, redirect } from 'remix';
 import { oAuthStrategy } from '~/auth.server';
 
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader: LoaderFunction = async ({ request }) => {
   await oAuthStrategy.checkSession(request, {
     failureRedirect: '/login',
   });
-  if (!params.worries_page) {
-    return redirect('/my-worries/1');
-  } else return {};
+  return {};
 };
 
 const MW = () => {

@@ -147,7 +147,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                   </li>
 
                   <li>
-                    <Link to="/my-worries/1">My worries</Link>
+                    <Link to="/my-worries?page=1">My worries</Link>
                   </li>
                   <div className="pt-1 border-b border-gray-500 " />
                   <li className="mt-1">
