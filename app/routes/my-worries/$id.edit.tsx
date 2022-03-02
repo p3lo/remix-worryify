@@ -30,27 +30,21 @@ export const action: ActionFunction = async ({ request, params }) => {
   const worry: string | undefined = formData.get('worry')?.toString();
   let worry_id = params.id;
   if (worry && worry_id) {
+    let isAnon;
     if (formData.get('anonymously')) {
-      await db.posts.update({
-        where: {
-          id: +worry_id,
-        },
-        data: {
-          post: worry,
-          is_anon: true,
-        },
-      });
+      isAnon = true;
     } else {
-      await db.posts.update({
-        where: {
-          id: +worry_id,
-        },
-        data: {
-          post: worry,
-          is_anon: false,
-        },
-      });
+      isAnon = false;
     }
+    await db.posts.update({
+      where: {
+        id: +worry_id,
+      },
+      data: {
+        post: worry,
+        is_anon: isAnon,
+      },
+    });
   }
   return redirect('/my-worries?page=1');
 };

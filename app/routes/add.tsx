@@ -1,7 +1,6 @@
 import { ActionFunction, Form, LoaderFunction, redirect } from 'remix';
 import { oAuthStrategy } from '~/auth.server';
 import { db } from '~/utils/db.server';
-import { Profile } from '~/utils/types';
 
 export const loader: LoaderFunction = async ({ request }) => {
   await oAuthStrategy.checkSession(request, {
@@ -18,23 +17,19 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const worry: string | undefined = formData.get('worry')?.toString();
   if (worry && session.user) {
+    let isAnon;
     if (formData.get('anonymously')) {
-      await db.posts.create({
-        data: {
-          post: worry,
-          is_anon: true,
-          authorId: session.user.id,
-        },
-      });
+      isAnon = true;
     } else {
-      await db.posts.create({
-        data: {
-          post: worry,
-          is_anon: false,
-          authorId: session.user.id,
-        },
-      });
+      isAnon = false;
     }
+    await db.posts.create({
+      data: {
+        post: worry,
+        is_anon: isAnon,
+        authorId: session.user.id,
+      },
+    });
   }
   return redirect('/');
 };

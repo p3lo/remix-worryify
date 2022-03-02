@@ -2041,6 +2041,10 @@ body[dir=rtl] .checkbox:checked,body[dir=rtl] .checkbox[checked=true] {
   height: 1rem;
 }
 
+.h-\[36px\] {
+  height: 36px;
+}
+
 .w-8 {
   width: 2rem;
 }
@@ -2087,6 +2091,10 @@ body[dir=rtl] .checkbox:checked,body[dir=rtl] .checkbox[checked=true] {
 
 .w-4 {
   width: 1rem;
+}
+
+.w-\[36px\] {
+  width: 36px;
 }
 
 .flex-grow {
@@ -2248,6 +2256,11 @@ body[dir=rtl] .checkbox:checked,body[dir=rtl] .checkbox[checked=true] {
 .text-5xl {
   font-size: 3rem;
   line-height: 1;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
 
 .font-semibold {
