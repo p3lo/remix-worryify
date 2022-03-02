@@ -56,14 +56,10 @@ export default function Index() {
         <h1 className="text-xl">Welcome to WorryIfy</h1>
         <p>A place to let your worries go.</p>
       </div>
-      <div className="mt-10 w-[95%] sm:w-[85%] md:w-[75%] border mx-auto p-3 border-gray-500">
-        <div className="flex flex-col space-y-3">
+      <div className="mt-10 w-[95%] sm:w-[85%] md:w-[75%] border mx-auto border-gray-500">
+        <div className="flex flex-col ">
           {all_posts.map((item: any) => (
-            <Link
-              to={`/${item.id}`}
-              key={item.id}
-              className="flex flex-col p-2 cursor-pointer hover:shadow hover:shadow-gray-500"
-            >
+            <Link to={`/${item.id}`} key={item.id} className="flex flex-col p-3 cursor-pointer hover:bg-gray-700">
               <div className="line-clamp-3">
                 <p className="text-sm text-gray-300 first-line:font-semibold first-line:text-base first-line:text-white">
                   {item.post}

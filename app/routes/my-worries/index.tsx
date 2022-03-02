@@ -78,11 +78,11 @@ export default function MyWorries() {
   return (
     <>
       <h1 className="flex items-center justify-center w-full text-xl font-semibold">Your worries</h1>
-      <div className="mt-5 w-[95%] sm:w-[85%] md:w-[75%] border mx-auto p-3 border-gray-500">
-        <div className="flex flex-col space-y-3">
+      <div className="mt-5 w-[95%] sm:w-[85%] md:w-[75%] border mx-auto border-gray-500">
+        <div className="flex flex-col">
           {worries.map((item: Worry) => (
-            <div key={item.id} className="flex">
-              <Link to={`/${item.id}`} className="flex flex-col p-2 cursor-pointer hover:shadow hover:shadow-gray-500">
+            <div key={item.id} className="flex hover:bg-gray-700">
+              <Link to={`/${item.id}`} className="flex flex-col p-3 cursor-pointer ">
                 <div className="line-clamp-3">
                   <p className="text-sm text-gray-300 first-line:font-semibold first-line:text-base first-line:text-white">
                     {item.post}
@@ -96,13 +96,13 @@ export default function MyWorries() {
                   <p>{getDate(item.created_at)}</p>
                 </div>
               </Link>
-              <Form method="post" className="flex flex-col items-center justify-center p-2 space-y-2">
+              <Form method="post" className="flex items-start justify-center px-2 py-4 space-x-2">
                 <input type="hidden" name="worryId" value={item.id} />
                 <button type="submit" name="_action" value="delete">
-                  <RiDeleteBin6Line className="h-4 w-4 text-red-500" />
+                  <RiDeleteBin6Line className="h-4 w-4 text-red-500 transition duration-150 ease-out transform cursor-pointer hover:scale-125" />
                 </button>
                 <button type="submit" name="_action" value="edit">
-                  <RiEditLine className="h-4 w-4 text-blue-500 cursor-pointer" />
+                  <RiEditLine className="h-4 w-4 text-blue-500 transition duration-150 ease-out transform cursor-pointer hover:scale-125" />
                 </button>
               </Form>
             </div>
