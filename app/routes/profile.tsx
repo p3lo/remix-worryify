@@ -2,7 +2,7 @@ import { ActionFunction, Form, LoaderFunction, Outlet } from 'remix';
 import { useLoaderData } from 'remix';
 import { oAuthStrategy } from '~/auth.server';
 import { db } from '~/utils/db.server';
-import { Profile, Worry } from '~/utils/types';
+import { Profile } from '~/utils/types';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await oAuthStrategy.checkSession(request, {
@@ -29,7 +29,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (!user_name || !email) {
     return null;
   }
-  const updateUser = await db.profiles.update({
+  await db.profiles.update({
     where: {
       id: session.user?.id,
     },
@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
   return null;
 };
 
-export default function Profile() {
+export default function Profiles() {
   const { user }: { user: Profile } = useLoaderData();
 
   return (

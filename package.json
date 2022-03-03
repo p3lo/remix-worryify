@@ -5,19 +5,21 @@
   "license": "",
   "sideEffects": false,
   "scripts": {
-    "build": "npm run build:css && remix build",
+    "build": "npm run build:css && cross-env NODE_ENV=production remix build",
     "build:css": "tailwindcss -o ./app/tailwind.css",
-    "dev": "concurrently \"npm run dev:css\" \"node -r dotenv/config ./node_modules/@remix-run/dev/cli.js\"",
+    "dev": "concurrently \"npm run dev:css\" \"cross-env NODE_ENV=development remix build && run-p dev:*\"",
+    "dev:remix": "cross-env NODE_ENV=development remix watch",
+    "dev:wrangler": "cross-env NODE_ENV=development wrangler pages dev ./public",
     "dev:css": "tailwindcss -o ./app/tailwind.css --watch",
-    "postinstall": "remix setup node",
-    "start": "cross-env NODE_ENV=production remix-serve build"
+    "postinstall": "remix setup cloudflare-pages",
+    "start": "cross-env NODE_ENV=production npm run dev:wrangler"
   },
   "dependencies": {
     "@prisma/client": "^3.10.0",
+    "@remix-run/cloudflare-pages": "^1.2.3",
     "@remix-run/react": "^1.2.2",
     "@remix-run/serve": "^1.2.2",
     "@supabase/supabase-js": "^1.30.6",
-    "cross-env": "^7.0.3",
     "daisyui": "^2.2.0",
     "dotenv": "^16.0.0",
     "react": "^17.0.2",
@@ -28,16 +30,22 @@
     "remix-auth-supabase": "^3.1.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^3.4.0",
     "@remix-run/dev": "^1.2.2",
+    "@remix-run/eslint-config": "^1.2.3",
     "@tailwindcss/line-clamp": "^0.3.1",
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
     "autoprefixer": "^10.4.2",
     "concurrently": "^7.0.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.10.0",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8.4.6",
     "prisma": "^3.10.0",
     "tailwindcss": "^3.0.23",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "wrangler": "^0.0.4"
   },
   "engines": {
     "node": ">=14"
